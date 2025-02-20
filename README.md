@@ -9,6 +9,8 @@
 ## Overview
 The AI-Powered Text Processing Interface is a web application that enables users to process text through summarization, translation, and language detection. The interface is designed with accessibility, responsiveness, and efficiency in mind, offering a seamless user experience.
 
+![Project Preview](https://i.ibb.co/1tjSf0y2/6c3aae74-be4c-492e-a8d1-0f956c053d30.png)
+
 ## Core Features
 ### Text Processing
 - **Language Detection:** Automatically detect the input text's language.
@@ -24,10 +26,6 @@ The AI-Powered Text Processing Interface is a web application that enables users
 - Full support for screen readers.
 - Keyboard-friendly navigation.
 - Clear visual cues for focus and hover states.
-
-### State Persistence
-- User input and results persist using IndexedDB or local storage.
-- Ensures a smooth experience even after page refresh.
 
 ### Responsive Design
 - Optimized layout for mobile, tablet, and desktop.
@@ -45,9 +43,6 @@ The AI-Powered Text Processing Interface is a web application that enables users
 - Summarized text should be concise and meaningful.
 - Detected language should be displayed clearly.
 - Translated text should be accurate and formatted properly.
-
-### State Persistence
-- Inputs and outputs should remain available even after a page refresh.
 
 ### Accessibility
 - All UI components should be screen-reader-friendly.
@@ -80,7 +75,6 @@ npm run dev
 - **TypeScript** – Ensures type safety and improved development experience.
 - **Tailwind CSS** – Utility-first CSS framework for styling.
 - **Chrome AI APIs** – For text summarization, translation, and language detection.
-- **IndexedDB / Local Storage** – To persist user inputs and results.
 
 ## Contributing
 If you'd like to contribute, feel free to fork the repository and submit a pull request with your improvements.
