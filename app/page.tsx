@@ -30,7 +30,6 @@ export default function Introduction() {
     <div className="min-h-screen bg-gradient-to-r from-gray-900 to-black text-white overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 py-12 sm:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left Column - Main Content */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -79,7 +78,6 @@ export default function Introduction() {
             </motion.div>
           </motion.div>
 
-          {/* Right Column - Features */}
           <motion.div
             variants={containerVariants}
             initial="hidden"

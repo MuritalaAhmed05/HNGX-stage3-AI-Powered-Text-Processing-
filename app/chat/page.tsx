@@ -65,6 +65,7 @@ export default function ChatTranslator() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const [summarizingIndex, setSummarizingIndex] = useState<number | null>(null);
 
   const scrollToBottom = () => {
     requestAnimationFrame(() => {
@@ -75,6 +76,14 @@ export default function ChatTranslator() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (error) {
+      setTimeout(() => {
+        setError("");
+      }, 3000);
+    }
+  }, [error]);
 
   useEffect(() => {
     if (self.ai?.translator && self.ai?.languageDetector) {
@@ -161,6 +170,8 @@ export default function ChatTranslator() {
     }
   };
   const summarizeMessage = async (index: number) => {
+    setSummarizingIndex(index); 
+  
     try {
       if (self.ai?.summarizer) {
         const summarizer = await self.ai.summarizer.create({
@@ -176,8 +187,11 @@ export default function ChatTranslator() {
     } catch (err) {
       setError("Error summarizing message. Please try again.");
       console.error("Error summarizing message:", err);
+    } finally {
+      setSummarizingIndex(null); // Stop loading
     }
   };
+  
 
   return (
     <div className="bg-white dark:bg-[#060606] lg:px-[7rem] md:px-[5rem] transition-colors duration-300">
@@ -186,9 +200,12 @@ export default function ChatTranslator() {
   </div>
 
   <div className="w-full mx-auto bg-white dark:bg-[#060606] h-screen flex flex-col dark:shadow-xl overflow-hidden relative z-10 transition-colors duration-300">
-    {error && (
-      <div className="mt-4 p-3 bg-red-500 text-white rounded-lg">{error}</div>
-    )}
+   {error && (
+  <div className="fixed z-10 top-5 right-5 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg animate-slide-in">
+    {error}
+  </div>
+)}
+
     <header className="border-b flex justify-between border-black/20 dark:border-white/20 p-4 bg-white/20 dark:bg-black/20 backdrop-blur-sm transition-colors duration-300">
       <div className="flex items-center gap-3">
         <Globe className="w-8 h-8 text-purple-600 dark:text-white animate-spin-slow" />
@@ -226,13 +243,22 @@ export default function ChatTranslator() {
                   </span>
                 </div>
                 {msg.text.length > 150 && msg.detectedLang === "en" && !msg.summary && (
-                  <button
-                    onClick={() => summarizeMessage(index)}
-                    className="mt-2 px-3 py-1 bg-blue-500 text-white rounded-lg"
-                  >
-                    Summarize
-                  </button>
-                )}
+  <button
+    onClick={() => summarizeMessage(index)}
+    className="mt-2 px-3 py-1 bg-blue-500 text-white rounded-lg flex items-center gap-2"
+    disabled={summarizingIndex === index}
+  >
+    {summarizingIndex === index ? (
+      <>
+        <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-4 h-4"></span>
+        Summarizing...
+      </>
+    ) : (
+      "Summarize"
+    )}
+  </button>
+)}
+
               </div>
             </div>
 
