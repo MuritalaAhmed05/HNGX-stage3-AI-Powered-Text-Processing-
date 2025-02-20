@@ -1,219 +1,116 @@
-'use client';
+"use client"
+import React, { useState } from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import { Sparkles, MessageSquare, Globe, FileText } from 'lucide-react';
 
-import { useState, useEffect, useRef } from 'react';
-import { Send, Loader2 } from 'lucide-react';
+export default function Introduction() {
+  const [hoveredFeature, setHoveredFeature] = useState<number | null>(null);
 
+  const features = [
+    { icon: <FileText className="w-6 h-6" />, title: "Detection", description: "Detect languages provided" },
+    { icon: <Globe className="w-6 h-6" />, title: "Translation", description: "Translate between 12 languages" },
+    { icon: <MessageSquare className="w-6 h-6" />, title: "Smart Summaries", description: "Get concise summaries of any text" },
+  ];
 
-
-interface Translator {
-  create: (options: { sourceLanguage: string; targetLanguage: string }) => Promise<{ translate: (text: string) => Promise<string> }>;
-}
-
-interface LanguageDetector {
-  create: () => Promise<{ detect: (text: string) => Promise<{ detectedLanguage: string }[]> }>;
-}
-
-interface AI {
-  translator?: Translator;
-  languageDetector?: LanguageDetector;
-}
-
-declare const self: { ai?: AI }
-
-const languageMap: Record<string, string> = {
-  en: 'English',
-  zh: 'Mandarin Chinese (Simplified)',
-  'zh-Hant': 'Taiwanese Mandarin (Traditional)',
-  ja: 'Japanese',
-  pt: 'Portuguese',
-  ru: 'Russian',
-  es: 'Spanish',
-  tr: 'Turkish',
-  hi: 'Hindi',
-  vi: 'Vietnamese',
-  bn: 'Bengali',
-  fr: 'French',
-};
-
-interface Message {
-  text: string;
-  detectedLang: string;
-  translation: string;
-  targetLang: string;
-}
-
-export default function ChatTranslator() {
-  const [text, setText] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [apiSupported, setApiSupported] = useState(false);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { staggerChildren: 0.3 }
+    }
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-  useEffect(() => {
-    if (self.ai?.translator && self.ai?.languageDetector) {
-      setApiSupported(true);
-    } else {
-      setApiSupported(false);
-    }
-  }, []);
-
-
-  const sendMessage = async () => {
-    if (!text.trim()) return;
-    setError('');
-    const newMessage: Message = { text, detectedLang: '', translation: '', targetLang: '' };
-    setMessages((prev) => [...prev, newMessage]);
-    setText('');
-
-
-    setTimeout(() => {
-      scrollToBottom();
-    }, 100)
-
-    try {
-      if (self.ai?.languageDetector) {
-        const detector = await self.ai.languageDetector.create();
-        const results = await detector.detect(newMessage.text);
-        if (results.length > 0) {
-          newMessage.detectedLang = results[0].detectedLanguage;
-        } else {
-          newMessage.detectedLang = 'Unknown';
-        }
-      } else {
-        setError('Language detector is not available.');
-      }
-    } catch (err) {
-      setError('Error detecting language. Please try again.');
-      console.error(err);
-    }
-
-    setMessages((prev) => [...prev.slice(0, -1), newMessage]);
-  };
-
-  const translateMessage = async (index: number, targetLang: string) => {
-    if (!targetLang) {
-      setError('Please select a language to translate to.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      if (self.ai?.translator) {
-        const translator = await self.ai.translator.create({
-          sourceLanguage: messages[index].detectedLang || 'en',
-          targetLanguage: targetLang,
-        });
-        const result = await translator.translate(messages[index].text);
-        const updatedMessages = [...messages];
-        updatedMessages[index] = { ...messages[index], translation: result, targetLang };
-        setMessages(updatedMessages);
-      } else {
-        setError('Translator is not available.');
-      }
-    } catch (err) {
-      setError('Error translating message. Please try again.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
   };
 
   return (
-       <div className="w-full mx-auto bg-white dark:bg-gray-900 h-[600px] flex flex-col rounded-xl shadow-lg overflow-hidden">
-      <header className="border-b p-4 bg-gray-100 dark:bg-gray-800">
-        <h2 className="text-2xl font-semibold">Translation Assistant</h2>
-      </header>
+    <div className="min-h-screen bg-gradient-to-r from-gray-900 to-black text-white overflow-hidden">
+      <div className="max-w-6xl mx-auto px-4 py-12 sm:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Left Column - Main Content */}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1 }}
+            className="text-center lg:text-left"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-block"
+            >
+              <Sparkles className="inline-block w-8 h-8 text-purple-400 mb-4" />
+            </motion.div>
+            
+            <motion.h1
+              className="text-4xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              AI Text Processing
+              <span className="block text-2xl md:text-3xl mt-2 text-white">Made Simple</span>
+            </motion.h1>
 
-      {!apiSupported && (
-        <div className="m-4 p-3 bg-red-500 text-white rounded-lg">
-          Chrome AI Translator API is not supported in this environment.
-        </div>
-      )}
+            <motion.p
+              className="text-lg md:text-xl mb-8 text-gray-300"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
+              Transform your text with AI-powered features. Summarize, translate, and detect with just a few clicks.
+            </motion.p>
 
-      <main className="flex-grow p-4 overflow-y-auto flex flex-col-reverse">
-        <div className="space-y-4">
-          <div ref={messagesEndRef} />
-          {messages.map((msg, index) => (
-            <div key={index} className="space-y-2">
-              <div className="flex justify-end">
-                <div className="max-w-[75%] bg-blue-500 dark:bg-blue-600 p-3 rounded-lg rounded-tr-none text-white">
-                  <p>{msg.text}</p>
-                  {msg.detectedLang && (
-                    <span className="text-xs text-blue-100 block mt-1">
-                      Detected: {languageMap[msg.detectedLang] || msg.detectedLang}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="flex justify-end items-center gap-2">
-                <select
-                  className="p-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-md text-sm"
-                  value={msg.targetLang}
-                  onChange={(e) => setMessages((prev) => {
-                    const updated = [...prev];
-                    updated[index].targetLang = e.target.value;
-                    return updated;
-                  })}
-                >
-                  <option value="">Select language</option>
-                  {Object.entries(languageMap).map(([code, name]) => (
-                    <option key={code} value={code}>
-                      {name}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  onClick={() => translateMessage(index, msg.targetLang)}
-                  disabled={loading || !msg.targetLang}
-                  className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded-lg text-sm"
-                >
-                  {loading ? "Translating..." : "Translate"}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="flex justify-center lg:justify-start  items-center"
+            >
+              <Link href="/chat">
+                <button className="px-8 py-4 bg-purple-600 rounded-full font-semibold text-white hover:bg-purple-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-purple-500/30">
+                  Get Started
                 </button>
-              </div>
+              </Link>
+              
+            </motion.div>
+          </motion.div>
 
-              {msg.translation && (
-                <div className="flex justify-start">
-                  <div className="max-w-[75%] bg-gray-200 dark:bg-gray-700 p-3 rounded-lg rounded-tl-none">
-                    <p>{msg.translation}</p>
+          {/* Right Column - Features */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid gap-6"
+          >
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                variants={itemVariants}
+                onHoverStart={() => setHoveredFeature(index)}
+                onHoverEnd={() => setHoveredFeature(null)}
+                className="bg-gray-800/50 p-6 rounded-xl backdrop-blur-sm border border-gray-700 transform transition-all duration-300 hover:scale-105"
+                style={{
+                  boxShadow: hoveredFeature === index ? '0 0 20px rgba(168, 85, 247, 0.4)' : 'none'
+                }}
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="bg-purple-500/20 p-3 rounded-lg">
+                    {feature.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold">{feature.title}</h3>
+                    <p className="text-gray-400">{feature.description}</p>
                   </div>
                 </div>
-              )}
-            </div>
-          ))}
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
-      </main>
-
-      <footer className="border-t p-4 bg-gray-100 dark:bg-gray-800">
-        <div className="flex w-full gap-2">
-          <textarea
-            className="flex-1 p-3 border rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 min-h-[60px] max-h-[120px] resize-y"
-            placeholder="Type your message..."
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-              }
-            }}
-          />
-          <button onClick={sendMessage} className="h-[60px] w-[60px] bg-blue-500 dark:bg-blue-600 text-white rounded-lg flex items-center justify-center">
-            <Send className="w-5 h-5" />
-          </button>
-        </div>
-        {error && (
-          <div className="mt-4 p-3 bg-red-500 text-white rounded-lg">{error}</div>
-        )}
-      </footer>
+      </div>
     </div>
   );
 }
