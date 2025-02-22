@@ -195,7 +195,7 @@ export default function ChatTranslator() {
   return (
     <div className="bg-white dark:bg-[#060606] lg:px-[7rem] md:px-[5rem] transition-colors duration-300">
       <div className="absolute inset-0 w-full h-full pointer-events-none">
-        <SplashCursor />
+     {/* <SplashCursor /> */}
       </div>
 
       <div className="w-full mx-auto bg-white dark:bg-[#060606] h-screen flex flex-col dark:shadow-xl overflow-hidden relative z-10 transition-colors duration-300">
